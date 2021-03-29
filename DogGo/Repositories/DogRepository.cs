@@ -187,7 +187,7 @@ namespace DogGo.Repositories
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     List<Dog> dogs = new List<Dog>();
-
+                    //while for more than one (if is looking for one)
                     while (reader.Read())
                     {
                         Dog dog = new Dog()

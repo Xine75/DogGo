@@ -124,6 +124,7 @@ namespace DogGo.Repositories
 
                     cmd.Parameters.AddWithValue("@neighborhoodId", neighborhoodId);
 
+                    //this command sends the SQL query to SQL server
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     List<Walker> walkers = new List<Walker>();
