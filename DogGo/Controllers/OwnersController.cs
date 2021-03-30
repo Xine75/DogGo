@@ -1,11 +1,14 @@
 ﻿using DogGo.Models;
 using DogGo.Models.ViewModels;
 using DogGo.Repositories;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DogGo.Controllers
@@ -32,6 +35,48 @@ namespace DogGo.Controllers
             _walkerRepo = walkerRepository;
             _neighborhoodRepo = neighborhoodRepository;
         }
+        //GET
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+            [HttpPost]
+            public async Task<ActionResult> Login(LoginViewModel viewModel)
+            {
+                Owner owner = _ownerRepo.GetOwnerByEmail(viewModel.Email);
+
+            //verify that the owner is authorized - in conjunction with OwnerRepo method
+
+                if (owner == null)
+                {
+                    return Unauthorized();
+                }
+                //create the info to send a cookie to the browser
+
+                List<Claim> claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, owner.Id.ToString()),
+        new Claim(ClaimTypes.Email, owner.Email),
+        new Claim(ClaimTypes.Role, "DogOwner"),
+    };
+
+                ClaimsIdentity claimsIdentity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity));
+
+                return RedirectToAction("Index", "Dogs");
+            }
+
+        public async Task<ActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+        
 
 
         // GET: OwnersController
@@ -140,10 +185,15 @@ namespace DogGo.Controllers
                 _ownerRepo.DeleteOwner(id);
                 return RedirectToAction("Index");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return View(owner);
             }
         }
+
+
+
+
+       
     }
 }
