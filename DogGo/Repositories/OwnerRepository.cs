@@ -131,7 +131,7 @@ namespace DogGo.Repositories
                         reader.Close();
                         return owner;
                     }
-
+                    //if owner is null, login will fail (Unauthorized) - see OwnersController
                     reader.Close();
                     return null;
                 }
