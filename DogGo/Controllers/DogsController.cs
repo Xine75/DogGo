@@ -15,6 +15,7 @@ namespace DogGo.Controllers
     {
 
         private readonly IDogRepository _dogRepo;
+       //creating an instance of the dogRepository CLASS (created at DogRepository
         public DogsController(IDogRepository dogRepository)
         {
             _dogRepo = dogRepository;
@@ -72,6 +73,7 @@ namespace DogGo.Controllers
 
 
         // GET: DogsController/Edit/5
+        [Authorize]
         public ActionResult Edit(int id)
         {
             Dog dog = _dogRepo.GetDogById(id);
@@ -79,10 +81,19 @@ namespace DogGo.Controllers
             {
                 return NotFound();
             }
-            return View(dog);
+            //prevents current user from editing any other dog (if they were to change the url)
+
+            if (dog.OwnerId == GetCurrentUserId())
+            {
+                return View(dog);
+            }
+
+            return NotFound();
+            
         }
 
         // POST: DogsController/Edit/5
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, Dog dog)
@@ -99,6 +110,7 @@ namespace DogGo.Controllers
         }
 
         // GET: DogsController/Delete/5
+        [Authorize]
         public ActionResult Delete(int id)
         {
             Dog dog = _dogRepo.GetDogById(id);
@@ -106,6 +118,7 @@ namespace DogGo.Controllers
         }
 
         // POST: DogsController/Delete/5
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, Dog dog)
