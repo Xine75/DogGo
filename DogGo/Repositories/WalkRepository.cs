@@ -72,7 +72,7 @@ namespace DogGo.Repositories
                     cmd.CommandText = @"
                                        SELECT wk.Id, w.Id AS WalkerId, d.Id AS DogId, w.[Name], wk.[Date], wk.Duration, o.[Name] AS Owner
                                         FROM Walker w
-                                        LEFT JOIN Walks wk on wk.WalkerId = w.Id
+                                        JOIN Walks wk on wk.WalkerId = w.Id
                                         LEFT JOIN Dog d on wk.DogId = d.Id
                                         LEFT JOIN [Owner] o on o.Id = d.OwnerId
                                         WHERE w.id = @id
